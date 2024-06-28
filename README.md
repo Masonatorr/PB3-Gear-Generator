@@ -44,8 +44,8 @@ Because you cannot have a shape with two disconnected edge loops, ring gears nee
 Therefore, you have two options: a) keep the seam invisible but leave the gear uneditable, or b) widen the seam enough that you can edit the gear, but be left with a visible seam.  
 (Seam vs no seam)  
 ![seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/ac73b086-c986-4ef1-9ab9-47fc78b94260 "Seam")
-![no seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/eb2888db-5a7e-4bfe-9e20-34e96abfca78 "No seam")
-
+![no seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/eb2888db-5a7e-4bfe-9e20-34e96abfca78 "No seam")  
+To keep your seam invisible, type "N" into the input field. To widen the seam, type "Y".
 
 ## Clearance:
 This one is relatively simple, adding a small amount of clearance between meshing gears. For the spur gears, the tips of the teeth are shortened slightly by whatever amount you set. For the ring gears, the bases of the inverse "teeth" are pulled slighty away from the center so that they do not rub against the bases of the spur gears' teeth.
