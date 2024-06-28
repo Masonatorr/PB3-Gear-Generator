@@ -25,7 +25,7 @@ Self explanatory. Whatever number you enter is the number of teeth that the resu
 This one isn't as intuitive. The gear's radius is measured via this red ring here:  
 ![Gear radius](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/21415c14-2acd-47d9-960b-0265ed2338dc "Gear radius")  
 When the teeth are generated, the highest and lowest points of the teeth will be an equal distance away from this line.  
-Why? Well, here's an example:  
+Why have the line here instead of at the base of the teeth? Well, here's an example:  
 ![Gears meshing](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/2055e226-d7be-4cef-9a5b-628b8c96b379 "Two gears' radii intersecting")  
 See how the red circles are touching when the gears are meshing together? Having the teeth heights be relative to these circles makes it easier to generate meshing gears. If the radius was based on the tips or the bases of the teeth, you wouldn't be able to measure from a common point (the intersection), and so it wouldn't be as intuitive.
 
