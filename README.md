@@ -5,16 +5,21 @@ This program is relatively self explanatory, but I will give some extra info her
 
 
 ## Gear Type:
-This is the type of gear that will be created. These are the four types currently available:
+This is the type of gear that will be created. These are the six types currently available:
 1. Triangle Tooth Spur Gear
 2. Trapezoidal Tooth Spur Gear
 3. Triangle Tooth Ring Gear
 4. Trapezoidal Tooth Ring Gear
+5. Triangle Tooth Rack Gear
+6. Trapezoidal Tooth Rack Gear  
 
 ![Triangle Tooth Spur Gear](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/8cd10270-53a7-4e22-9675-e7a11eeaa40b "Triangle Tooth Spur Gear")
 ![Trapezoidal Tooth Spur Gear](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/dd277978-750b-44b4-89c8-ded285cb7f6e "Trapezoidal Tooth Spur Gear")
 ![Triangle Tooth Ring Gear](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/80686a40-066b-4e1a-890d-06a6cda1163d "Triangle Tooth Ring Gear")
-![Trapezoidal Tooth Ring Gear](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/459710e2-e25e-4f8a-ae1a-66ce0713c2f8 "Trapezoidal Tooth Ring Gear")  
+![Trapezoidal Tooth Ring Gear](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/459710e2-e25e-4f8a-ae1a-66ce0713c2f8 "Trapezoidal Tooth Ring Gear")
+![Triangle Tooth Rack Gear](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/63bb4894-1088-49ab-a527-c5214c2dc82e "Triangle Tooth Rack Gear")
+![Trapezoidal Tooth Rack Gear](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/62268870-cc55-433c-89e2-049ac8882e56 "Trapezoidal Tooth Rack Gear")  
+
 
 To select which gear you want to generate, type the gear's number into the input field.
 
@@ -46,6 +51,9 @@ Therefore, you have two options: a) keep the seam invisible but leave the gear u
 ![seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/ac73b086-c986-4ef1-9ab9-47fc78b94260 "Seam")
 ![no seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/eb2888db-5a7e-4bfe-9e20-34e96abfca78 "No seam")  
 To keep your seam invisible, type "N" into the input field. To widen the seam, type "Y".
+
+## Rack Gears:
+Rack gears are unique in that they are not round like the rest. Instead, they are flattened into strips of teeth. Because of their unique shape, it is much harder to generate them in such a way that they mesh perfectly with other gears. Therefore, these gears are formed using a "reference gear", basically being the gear that this rack is designed to mesh with.
 
 ## Clearance:
 This one is relatively simple, adding a small amount of clearance between meshing gears. For the spur gears, the tips of the teeth are shortened slightly by whatever amount you set. For the ring gears, the bases of the inverse "teeth" are pulled slighty away from the center so that they do not rub against the bases of the spur gears' teeth.
