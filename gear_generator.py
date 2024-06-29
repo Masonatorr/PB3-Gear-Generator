@@ -16,7 +16,9 @@ else:
 gear_type_options = ['1: Triangle Tooth Spur Gear',
 					'2: Trapezoidal Tooth Spur Gear',
 					'3: Triangle Tooth Ring Gear',
-					'4: Trapezoidal Tooth Ring Gear'
+					'4: Trapezoidal Tooth Ring Gear',
+					'5: Triangle Tooth Rack Gear',
+					'6: Trapezoidal Tooth Rack Gear'
 					]
 def verifyVerticesAbove100():
 	print("Warning, the number of vertices that will be generated for this gear exceeds the max amount of manually editable vertices (100), continue anyways? (Y/N)")
@@ -46,12 +48,14 @@ if __name__ == '__main__':
 				gear_type = input("\nGear type: ")
 				if gear_type.isdigit() and int(gear_type) in range(1, len(gear_type_options)+1):
 					gear_type = int(gear_type)
+					if gear_type in [5, 6]:
+						print("\nTo generate a rack gear, you will have to create a reference gear. Input the values of the reference gear here:\n")
 					break
 				else:
 					print("\n ## Invalid selection, please try again.")
 
 			while True:
-				num_teeth = input("Number of teeth: ")
+				num_teeth = input("(Reference gear) Number of teeth: " if gear_type in [5, 6] else "Number of teeth: ")
 				if num_teeth.isdigit() and int(num_teeth) >= 4:
 					num_teeth = int(num_teeth)
 					if (gear_type == 1 and num_teeth > 50) or (gear_type == 2 and num_teeth > 25) or (gear_type == 3 and num_teeth > 41) or (gear_type == 4 and num_teeth > 20): 
@@ -66,7 +70,7 @@ if __name__ == '__main__':
 						print("\n ## Invalid input, must be an integer (whole number).")
 					
 			while True:
-				inner_size = input("Gear radius (aka pitch circle radius): ")
+				inner_size = input("(Reference gear) Gear radius (aka pitch circle radius): " if gear_type in [5, 6] else "Gear radius (aka pitch circle radius): ")
 				if is_number(inner_size) and float(inner_size) > 0:
 					inner_size = float(inner_size)
 					break
@@ -77,7 +81,7 @@ if __name__ == '__main__':
 						print("\n ## Invalid input, must be a number.")
 					
 			while True:
-				tooth_height = input("Tooth height: ")
+				tooth_height = input("(Reference gear) Tooth height: " if gear_type in [5, 6] else "Tooth height: ")
 				if is_number(tooth_height) and float(tooth_height) > 0:
 					tooth_height = float(tooth_height)/2
 					break
@@ -86,6 +90,24 @@ if __name__ == '__main__':
 						print("\n ## Invalid input, tooth height must be greater than 0.")
 					else:
 						print("\n ## Invalid input, must be a number.")
+
+			if gear_type in [5, 6]:
+				print("\nReference gear done. These next few parameters will directly control the resulting rack gear.\n")
+
+				while True:
+					true_num_teeth = input("Number of teeth: ")
+					if true_num_teeth.isdigit() and int(true_num_teeth) >= 2:
+						true_num_teeth = int(true_num_teeth)
+						if (gear_type == 5 and true_num_teeth > 49) or (gear_type == 6 and true_num_teeth > 24): 
+							if verifyVerticesAbove100():
+								break
+						else:
+							break
+					else:
+						if true_num_teeth.isdigit():
+							print("\n ## Invalid input, number of teeth must be at least 2.")
+						else:
+							print("\n ## Invalid input, must be an integer (whole number).")
 
 			if gear_type in [3, 4]:
 				while True:
@@ -171,6 +193,32 @@ if __name__ == '__main__':
 					points.append([r2 * math.cos(math.radians(0.05 * (360 / max_vertices))), r2 * math.sin(math.radians(0.05 * (360 / max_vertices)))])
 				else:
 					points.append([r2, 0.0001])
+			elif gear_type == 5:
+				inner_size *= 1000000
+				num_teeth *= 1000000
+				points = []
+				max_vertices = (num_teeth * 2)
+				for i in range(0, true_num_teeth * 2):
+					r = inner_size - tooth_height
+					if i%2 == 0: r += tooth_height*2 - clearance
+					points.append([r * math.cos(math.radians(i * (360 / max_vertices) + 90)), (r * math.sin(math.radians((i-0.5) * (360 / max_vertices) + 90)) - (inner_size - tooth_height*2))])
+				points.append([r * math.cos(math.radians(i * (360 / max_vertices) + 90)), -0.5])
+				points.append([0, -0.5])
+			elif gear_type == 6:
+				inner_size *= 1000000
+				num_teeth *= 1000000
+				points = []
+				max_vertices = (num_teeth * 4)
+				for i in range(-1, true_num_teeth * 4 - 1):
+					r = inner_size - tooth_height
+					if i%4 < 2: r += tooth_height*2 - clearance
+					if i%4 == 1: i -= 0.075
+					if i%4 == 2: i -= 0.075
+					if i%4 == 3: i += 0.075
+					if i%4 == 0: i += 0.075
+					points.append([r * math.cos(math.radians((i-0.5) * (360 / max_vertices) + 90)), (r * math.sin(math.radians((i-0.5) * (360 / max_vertices) + 90)) - (inner_size - tooth_height*2))])
+				points.append([r * math.cos(math.radians((i-0.5) * (360 / max_vertices) + 90)), -0.5])
+				points.append([r * math.cos(math.radians(-1.45 * (360 / max_vertices) + 90)), -0.5])
 
 
 			#print('\n'.join(map(str, points)))
@@ -203,7 +251,10 @@ if __name__ == '__main__':
 								else:
 									converted_points += ',\n\t\t\t{\n\t\t\t\t"$type": 5,\n\t\t\t\t' + str(i[0]) + ',\n\t\t\t\t' + str(i[1]) + '\n\t\t\t}'
 								point_num += 1
-							shape_data = '{\n\t"$id": 0,\n\t"$type": "0|CustomShapeProxy, Assembly-CSharp",\n\t"m_Version": 1,\n\t"m_Pos": {\n\t\t"$type": "1|UnityEngine.Vector3, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0\n\t},\n\t"m_Rot": {\n\t\t"$type": "2|UnityEngine.Quaternion, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0,\n\t\t1\n\t},\n\t"m_Scale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_MeshScale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_CollidesWithRoad": false,\n\t"m_CollidesWithNodes": false,\n\t"m_CollidesWithRamps": false,\n\t"m_CollidesWithVehicles": true,\n\t"m_CollidesWithSplitNodes": false,\n\t"m_Flipped": false,\n\t"m_LowFriction": false,\n\t"m_RotationDegrees": 0,\n\t"m_Mass": 40,\n\t"m_Bounciness": 0.5,\n\t"m_PinMotorStrength": 0,\n\t"m_PinTargetVelocity": 0,\n\t"m_PinTargetAcceleration": 0,\n\t"m_Thickness": 4,\n\t"m_Color": {\n\t\t"$type": "3|UnityEngine.Color, UnityEngine.CoreModule",\n\t\t1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_PointsLocalSpace": {\n\t\t"$id": 1,\n\t\t"$type": "4|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": ' + str(len(points)) + ',\n\t\t"$rcontent": [' + converted_points + '\n\t\t]\n\t},\n\t"m_StaticPins": {\n\t\t"$id": 2,\n\t\t"$type": "6|System.Collections.Generic.List`1[[UnityEngine.Vector3, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": 1,\n\t\t"$rcontent": [\n\t\t\t{\n\t\t\t\t"$type": 1,\n\t\t\t\t0,\n\t\t\t\t0,\n\t\t\t\t-2\n\t\t\t}\n\t\t]\n\t},\n\t"m_DynamicAnchors": {\n\t\t"$id": 3,\n\t\t"$type": 6,\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_DynamicAnchorGuids": {\n\t\t"$id": 4,\n\t\t"$type": "7|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib",\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_TextureId": "",\n\t"m_TextureTiling": 10,\n\t"m_Behavior": 0,\n\t"m_MeshId": "AUTOGEN",\n\t"m_MeshLocalPos": {\n\t\t"$type": 1,\n\t\t0,\n\t\t0,\n\t\t-2\n\t},\n\t"m_UndoGuid": ""\n}'
+							if gear_type in [5, 6]:
+								shape_data = '{\n\t"$id": 0,\n\t"$type": "0|CustomShapeProxy, Assembly-CSharp",\n\t"m_Version": 1,\n\t"m_Pos": {\n\t\t"$type": "1|UnityEngine.Vector3, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0\n\t},\n\t"m_Rot": {\n\t\t"$type": "2|UnityEngine.Quaternion, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0,\n\t\t1\n\t},\n\t"m_Scale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_MeshScale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_CollidesWithRoad": false,\n\t"m_CollidesWithNodes": false,\n\t"m_CollidesWithRamps": false,\n\t"m_CollidesWithVehicles": true,\n\t"m_CollidesWithSplitNodes": false,\n\t"m_Flipped": false,\n\t"m_LowFriction": true,\n\t"m_RotationDegrees": 0,\n\t"m_Mass": 40,\n\t"m_Bounciness": 0.5,\n\t"m_PinMotorStrength": 0,\n\t"m_PinTargetVelocity": 0,\n\t"m_PinTargetAcceleration": 0,\n\t"m_Thickness": 4,\n\t"m_Color": {\n\t\t"$type": "3|UnityEngine.Color, UnityEngine.CoreModule",\n\t\t1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_PointsLocalSpace": {\n\t\t"$id": 1,\n\t\t"$type": "4|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": ' + str(len(points)) + ',\n\t\t"$rcontent": [' + converted_points + '\n\t\t]\n\t},\n\t"m_StaticPins": {\n\t\t"$id": 2,\n\t\t"$type": "6|System.Collections.Generic.List`1[[UnityEngine.Vector3, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_DynamicAnchors": {\n\t\t"$id": 3,\n\t\t"$type": 6,\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_DynamicAnchorGuids": {\n\t\t"$id": 4,\n\t\t"$type": "7|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib",\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_TextureId": "",\n\t"m_TextureTiling": 10,\n\t"m_Behavior": 0,\n\t"m_MeshId": "AUTOGEN",\n\t"m_MeshLocalPos": {\n\t\t"$type": 1,\n\t\t0,\n\t\t0,\n\t\t-2\n\t},\n\t"m_UndoGuid": ""\n}'
+							else:
+								shape_data = '{\n\t"$id": 0,\n\t"$type": "0|CustomShapeProxy, Assembly-CSharp",\n\t"m_Version": 1,\n\t"m_Pos": {\n\t\t"$type": "1|UnityEngine.Vector3, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0\n\t},\n\t"m_Rot": {\n\t\t"$type": "2|UnityEngine.Quaternion, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0,\n\t\t1\n\t},\n\t"m_Scale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_MeshScale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_CollidesWithRoad": false,\n\t"m_CollidesWithNodes": false,\n\t"m_CollidesWithRamps": false,\n\t"m_CollidesWithVehicles": true,\n\t"m_CollidesWithSplitNodes": false,\n\t"m_Flipped": false,\n\t"m_LowFriction": true,\n\t"m_RotationDegrees": 0,\n\t"m_Mass": 40,\n\t"m_Bounciness": 0.5,\n\t"m_PinMotorStrength": 0,\n\t"m_PinTargetVelocity": 0,\n\t"m_PinTargetAcceleration": 0,\n\t"m_Thickness": 4,\n\t"m_Color": {\n\t\t"$type": "3|UnityEngine.Color, UnityEngine.CoreModule",\n\t\t1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_PointsLocalSpace": {\n\t\t"$id": 1,\n\t\t"$type": "4|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": ' + str(len(points)) + ',\n\t\t"$rcontent": [' + converted_points + '\n\t\t]\n\t},\n\t"m_StaticPins": {\n\t\t"$id": 2,\n\t\t"$type": "6|System.Collections.Generic.List`1[[UnityEngine.Vector3, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": 1,\n\t\t"$rcontent": [\n\t\t\t{\n\t\t\t\t"$type": 1,\n\t\t\t\t0,\n\t\t\t\t0,\n\t\t\t\t-2\n\t\t\t}\n\t\t]\n\t},\n\t"m_DynamicAnchors": {\n\t\t"$id": 3,\n\t\t"$type": 6,\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_DynamicAnchorGuids": {\n\t\t"$id": 4,\n\t\t"$type": "7|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib",\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_TextureId": "",\n\t"m_TextureTiling": 10,\n\t"m_Behavior": 0,\n\t"m_MeshId": "AUTOGEN",\n\t"m_MeshLocalPos": {\n\t\t"$type": 1,\n\t\t0,\n\t\t0,\n\t\t-2\n\t},\n\t"m_UndoGuid": ""\n}'
 							shape.write(shape_data)
 						with open(os.path.join(filepath, 'propstub'), 'w') as propstub:
 							json.dump({"$id": 0, "$type": "0|CustomShapesLibrarySlotProxy, Assembly-CSharp", "m_DisplayNamLocID": filename, "m_IconFilename": "", "m_PrefabAddress": ""}, propstub, indent = "")
@@ -257,7 +308,10 @@ if __name__ == '__main__':
 									else:
 										converted_points += ',\n\t\t\t{\n\t\t\t\t"$type": 5,\n\t\t\t\t' + str(i[0]) + ',\n\t\t\t\t' + str(i[1]) + '\n\t\t\t}'
 									point_num += 1
-								shape_data =  '{\n\t"$id": 0,\n\t"$type": "0|CustomShapeProxy, Assembly-CSharp",\n\t"m_Version": 1,\n\t"m_Pos": {\n\t\t"$type": "1|UnityEngine.Vector3, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0\n\t},\n\t"m_Rot": {\n\t\t"$type": "2|UnityEngine.Quaternion, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0,\n\t\t1\n\t},\n\t"m_Scale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_MeshScale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_CollidesWithRoad": false,\n\t"m_CollidesWithNodes": false,\n\t"m_CollidesWithRamps": false,\n\t"m_CollidesWithVehicles": true,\n\t"m_CollidesWithSplitNodes": false,\n\t"m_Flipped": false,\n\t"m_LowFriction": false,\n\t"m_RotationDegrees": 0,\n\t"m_Mass": 40,\n\t"m_Bounciness": 0.5,\n\t"m_PinMotorStrength": 0,\n\t"m_PinTargetVelocity": 0,\n\t"m_PinTargetAcceleration": 0,\n\t"m_Thickness": 4,\n\t"m_Color": {\n\t\t"$type": "3|UnityEngine.Color, UnityEngine.CoreModule",\n\t\t1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_PointsLocalSpace": {\n\t\t"$id": 1,\n\t\t"$type": "4|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": ' + str(len(points)) + ',\n\t\t"$rcontent": [' + converted_points + '\n\t\t]\n\t},\n\t"m_StaticPins": {\n\t\t"$id": 2,\n\t\t"$type": "6|System.Collections.Generic.List`1[[UnityEngine.Vector3, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": 1,\n\t\t"$rcontent": [\n\t\t\t{\n\t\t\t\t"$type": 1,\n\t\t\t\t0,\n\t\t\t\t0,\n\t\t\t\t-2\n\t\t\t}\n\t\t]\n\t},\n\t"m_DynamicAnchors": {\n\t\t"$id": 3,\n\t\t"$type": 6,\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_DynamicAnchorGuids": {\n\t\t"$id": 4,\n\t\t"$type": "7|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib",\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_TextureId": "",\n\t"m_TextureTiling": 10,\n\t"m_Behavior": 0,\n\t"m_MeshId": "AUTOGEN",\n\t"m_MeshLocalPos": {\n\t\t"$type": 1,\n\t\t0,\n\t\t0,\n\t\t-2\n\t},\n\t"m_UndoGuid": ""\n}'
+								if gear_type in [5, 6]:
+									shape_data = '{\n\t"$id": 0,\n\t"$type": "0|CustomShapeProxy, Assembly-CSharp",\n\t"m_Version": 1,\n\t"m_Pos": {\n\t\t"$type": "1|UnityEngine.Vector3, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0\n\t},\n\t"m_Rot": {\n\t\t"$type": "2|UnityEngine.Quaternion, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0,\n\t\t1\n\t},\n\t"m_Scale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_MeshScale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_CollidesWithRoad": false,\n\t"m_CollidesWithNodes": false,\n\t"m_CollidesWithRamps": false,\n\t"m_CollidesWithVehicles": true,\n\t"m_CollidesWithSplitNodes": false,\n\t"m_Flipped": false,\n\t"m_LowFriction": true,\n\t"m_RotationDegrees": 0,\n\t"m_Mass": 40,\n\t"m_Bounciness": 0.5,\n\t"m_PinMotorStrength": 0,\n\t"m_PinTargetVelocity": 0,\n\t"m_PinTargetAcceleration": 0,\n\t"m_Thickness": 4,\n\t"m_Color": {\n\t\t"$type": "3|UnityEngine.Color, UnityEngine.CoreModule",\n\t\t1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_PointsLocalSpace": {\n\t\t"$id": 1,\n\t\t"$type": "4|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": ' + str(len(points)) + ',\n\t\t"$rcontent": [' + converted_points + '\n\t\t]\n\t},\n\t"m_StaticPins": {\n\t\t"$id": 2,\n\t\t"$type": "6|System.Collections.Generic.List`1[[UnityEngine.Vector3, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_DynamicAnchors": {\n\t\t"$id": 3,\n\t\t"$type": 6,\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_DynamicAnchorGuids": {\n\t\t"$id": 4,\n\t\t"$type": "7|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib",\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_TextureId": "",\n\t"m_TextureTiling": 10,\n\t"m_Behavior": 0,\n\t"m_MeshId": "AUTOGEN",\n\t"m_MeshLocalPos": {\n\t\t"$type": 1,\n\t\t0,\n\t\t0,\n\t\t-2\n\t},\n\t"m_UndoGuid": ""\n}'
+								else:
+									shape_data = '{\n\t"$id": 0,\n\t"$type": "0|CustomShapeProxy, Assembly-CSharp",\n\t"m_Version": 1,\n\t"m_Pos": {\n\t\t"$type": "1|UnityEngine.Vector3, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0\n\t},\n\t"m_Rot": {\n\t\t"$type": "2|UnityEngine.Quaternion, UnityEngine.CoreModule",\n\t\t0,\n\t\t0,\n\t\t0,\n\t\t1\n\t},\n\t"m_Scale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_MeshScale": {\n\t\t"$type": 1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_CollidesWithRoad": false,\n\t"m_CollidesWithNodes": false,\n\t"m_CollidesWithRamps": false,\n\t"m_CollidesWithVehicles": true,\n\t"m_CollidesWithSplitNodes": false,\n\t"m_Flipped": false,\n\t"m_LowFriction": true,\n\t"m_RotationDegrees": 0,\n\t"m_Mass": 40,\n\t"m_Bounciness": 0.5,\n\t"m_PinMotorStrength": 0,\n\t"m_PinTargetVelocity": 0,\n\t"m_PinTargetAcceleration": 0,\n\t"m_Thickness": 4,\n\t"m_Color": {\n\t\t"$type": "3|UnityEngine.Color, UnityEngine.CoreModule",\n\t\t1,\n\t\t1,\n\t\t1,\n\t\t1\n\t},\n\t"m_PointsLocalSpace": {\n\t\t"$id": 1,\n\t\t"$type": "4|System.Collections.Generic.List`1[[UnityEngine.Vector2, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": ' + str(len(points)) + ',\n\t\t"$rcontent": [' + converted_points + '\n\t\t]\n\t},\n\t"m_StaticPins": {\n\t\t"$id": 2,\n\t\t"$type": "6|System.Collections.Generic.List`1[[UnityEngine.Vector3, UnityEngine.CoreModule]], mscorlib",\n\t\t"$rlength": 1,\n\t\t"$rcontent": [\n\t\t\t{\n\t\t\t\t"$type": 1,\n\t\t\t\t0,\n\t\t\t\t0,\n\t\t\t\t-2\n\t\t\t}\n\t\t]\n\t},\n\t"m_DynamicAnchors": {\n\t\t"$id": 3,\n\t\t"$type": 6,\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_DynamicAnchorGuids": {\n\t\t"$id": 4,\n\t\t"$type": "7|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib",\n\t\t"$rlength": 0,\n\t\t"$rcontent": [\n\t\t]\n\t},\n\t"m_TextureId": "",\n\t"m_TextureTiling": 10,\n\t"m_Behavior": 0,\n\t"m_MeshId": "AUTOGEN",\n\t"m_MeshLocalPos": {\n\t\t"$type": 1,\n\t\t0,\n\t\t0,\n\t\t-2\n\t},\n\t"m_UndoGuid": ""\n}'
 								shape.write(shape_data)
 							with open(os.path.join(filepath, 'propstub'), 'w') as propstub:
 								json.dump({"$id": 0, "$type": "0|CustomShapesLibrarySlotProxy, Assembly-CSharp", "m_DisplayNamLocID": file_to_overwrite, "m_IconFilename": "", "m_PrefabAddress": ""}, propstub, indent = "")
