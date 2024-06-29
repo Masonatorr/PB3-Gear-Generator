@@ -48,12 +48,14 @@ Ring gears have almost exactly the same shape as their respective spur gears, ex
 Because you cannot have a shape with two disconnected edge loops, ring gears need to have a seam. However, one issue with this is that if two vertices are too close to each other, the game gets upset and will not allow you to drag the shape's vertices. And unfortunately, widening the seam enough to edit the shape results in the seam being visible.  
 Therefore, you have two options: a) keep the seam invisible but leave the gear uneditable, or b) widen the seam enough that you can edit the gear, but be left with a visible seam.  
 (Seam vs no seam)  
-![seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/ac73b086-c986-4ef1-9ab9-47fc78b94260 "Seam")
-![no seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/eb2888db-5a7e-4bfe-9e20-34e96abfca78 "No seam")  
+![Seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/ac73b086-c986-4ef1-9ab9-47fc78b94260 "Seam")
+![No seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/eb2888db-5a7e-4bfe-9e20-34e96abfca78 "No seam")  
 To keep your seam invisible, type "N" into the input field. To widen the seam, type "Y".
 
 ## Rack Gears:
-Rack gears are unique in that they are not round like the rest. Instead, they are flattened into strips of teeth. Because of their unique shape, it is much harder to generate them in such a way that they mesh perfectly with other gears. Therefore, these gears are formed using a "reference gear", basically being the gear that this rack is designed to mesh with.
+Rack gears are unique in that they are not round like the rest. Instead, they are flattened into strips of teeth. Because of their unique shape, it is much harder to generate them in such a way that they mesh perfectly with other gears. Therefore, these gears are formed using a "reference gear", basically being the gear that this rack is designed to mesh with.  
+![Reference gear and resulting rack](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/d4bc9180-6aa5-47ef-a3f8-79611a33d7e5 "Reference gear and resulting rack")  
+The first three properties (num teeth, gear radius, and tooth height) shape this "reference" gear, and the final two (num teeth and clearance) directly shape the resulting rack gear.
 
 ## Clearance:
-This one is relatively simple, adding a small amount of clearance between meshing gears. For the spur gears, the tips of the teeth are shortened slightly by whatever amount you set. For the ring gears, the bases of the inverse "teeth" are pulled slighty away from the center so that they do not rub against the bases of the spur gears' teeth.
+This one is relatively simple, adding a small amount of clearance between meshing gears. For the spur and rack gears, the tips of the teeth are shortened slightly by whatever amount you set. For the ring gears, the bases of the inverse "teeth" are pulled slighty away from the center so that they do not rub against the bases of the spur gears' teeth.
