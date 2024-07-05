@@ -337,10 +337,7 @@ def generateGear():
 			x = r * math.cos(math.radians(i * (360 / max_vertices)))
 			y = r * math.sin(math.radians(i * (360 / max_vertices)))
 			points.append([x, y])
-			if abs(x) > farthest_point:
-				farthest_point = abs(x)
-			elif abs(y) > farthest_point:
-				farthest_point = abs(y)
+		farthest_point = inner_size + tooth_height - clearance
 	elif gear_type == 2:
 		points = []
 		max_vertices = (num_teeth * 4)
@@ -350,10 +347,7 @@ def generateGear():
 			x = r * math.cos(math.radians((i-0.5) * (360 / max_vertices)))
 			y = r * math.sin(math.radians((i-0.5) * (360 / max_vertices)))
 			points.append([x, y])
-			if abs(x) > farthest_point:
-				farthest_point = abs(x)
-			elif abs(y) > farthest_point:
-				farthest_point = abs(y)
+		farthest_point = inner_size + tooth_height - clearance
 	elif gear_type == 3:
 		points = []
 		max_vertices = (num_teeth * 2)
@@ -372,10 +366,7 @@ def generateGear():
 			x2 = r2 * math.cos(-math.radians(i * (360 / 16)))
 			y2 = r2 * math.sin(-math.radians(i * (360 / 16)))
 			points.append([x2, y2])
-			if abs(x2) > farthest_point:
-				farthest_point = abs(x2)
-			elif abs(y2) > farthest_point:
-				farthest_point = abs(y2)
+		farthest_point = outer_radius
 		if editable:
 			points.append([r2, 0.025])
 		else:
@@ -398,10 +389,7 @@ def generateGear():
 			x2 = r2 * math.cos(-math.radians(i * (360 / 16)))
 			y2 = r2 * math.sin(-math.radians(i * (360 / 16)))
 			points.append([x2, y2])
-			if abs(x2) > farthest_point:
-				farthest_point = abs(x2)
-			elif abs(y2) > farthest_point:
-				farthest_point = abs(y2)
+		farthest_point = outer_radius
 		if editable:
 			points.append([r2 * math.cos(math.radians(0.05 * (360 / max_vertices))), r2 * math.sin(math.radians(0.05 * (360 / max_vertices)))])
 		else:
@@ -412,21 +400,17 @@ def generateGear():
 		points = []
 		max_vertices = (num_teeth * 2)
 		offset = -(inner_size - tooth_height) * math.cos(math.radians((360 / max_vertices) + 90))
-		for i in range(0, true_num_teeth * 2):
+		for i in range(-1, true_num_teeth * 2):
 			r = inner_size - tooth_height
 			if i%2 == 0: r += tooth_height*2 - clearance
 			x = r * math.cos(math.radians(i * (360 / max_vertices) + 90)) + offset
-			y = (r * math.sin(math.radians((i-0.5) * (360 / max_vertices) + 90)) - (inner_size - tooth_height*2))
+			y = r * math.sin(math.radians(i * (360 / max_vertices) + 90)) - (inner_size - tooth_height*2)
 			points.append([x, y])
-			#if abs(x) > farthest_point:
-			#	farthest_point = abs(x)
-			#elif abs(y) > farthest_point:
-			#	farthest_point = abs(y)
 			avg_x += x
 		points.append([r * math.cos(math.radians(i * (360 / max_vertices) + 90)) + offset, -0.5])
-		points.append([offset, -0.5])
-		x_offset = (-avg_x / (true_num_teeth * 2))
-		farthest_point = x_offset + offset
+		points.append([r * math.cos(math.radians(-1 * (360 / max_vertices) + 90)) + offset, -0.5])
+		x_offset = (-avg_x / ((true_num_teeth * 2) + 1))
+		farthest_point = x_offset + offset + (r * math.cos(math.radians(-1 * (360 / max_vertices) + 90)))
 	elif gear_type == 6:
 		inner_size *= 1000000
 		num_teeth *= 1000000
@@ -443,10 +427,6 @@ def generateGear():
 			x = r * math.cos(math.radians((i-0.5) * (360 / max_vertices) + 90)) + offset
 			y = r * math.sin(math.radians((i-0.5) * (360 / max_vertices) + 90)) - (inner_size - tooth_height*2)
 			points.append([x, y])
-			#if abs(x) > farthest_point:
-			#	farthest_point = abs(x)
-			#elif abs(y) > farthest_point:
-			#	farthest_point = abs(y)
 			avg_x += x
 		points.append([r * math.cos(math.radians((i-0.5) * (360 / max_vertices) + 90)) + offset, -0.5])
 		points.append([r * math.cos(math.radians(-1.425 * (360 / max_vertices) + 90)) + offset, -0.5])
@@ -461,9 +441,6 @@ def generateGear():
 	scale_factor = 175/farthest_point
 	#print(farthest_point)
 	#print(scale_factor)
-	for i in points:
-		#print(i)
-		display_points.append([((i[0] + x_offset) * scale_factor) + 200, 200 - (i[1] * scale_factor)])
 	
 	for i in range(0, math.floor(200/(scale_factor/4)) + 1):
 		#if i%20 == 0:
@@ -472,23 +449,27 @@ def generateGear():
 		#	color = "#2d5475"
 		#else:
 		color = "#345f84"
-		display.create_line(i * (scale_factor/4) + 200, 0, i * (scale_factor/4) + 200, 400, fill=color, width=2)
-		display.create_line(0, i * (scale_factor/4) + 200, 400, i * (scale_factor/4) + 200, fill=color, width=2)
-		display.create_line(-i * (scale_factor/4) + 200, 0, -i * (scale_factor/4) + 200, 400, fill=color, width=2)
-		display.create_line(0, -i * (scale_factor/4) + 200, 400, -i * (scale_factor/4) + 200, fill=color, width=2)
+		display.create_line(i * (scale_factor/4) + 200, 0, i * (scale_factor/4) + 200, 400, fill=color, width=2.5)
+		display.create_line(0, i * (scale_factor/4) + 200, 400, i * (scale_factor/4) + 200, fill=color, width=2.5)
+		display.create_line(-i * (scale_factor/4) + 200, 0, -i * (scale_factor/4) + 200, 400, fill=color, width=2.5)
+		display.create_line(0, -i * (scale_factor/4) + 200, 400, -i * (scale_factor/4) + 200, fill=color, width=2.5)
 		#print(str(i) + "  " + str(i * (scale_factor/4)) + "  " + color)
 	for i in range(0, math.floor(200/(scale_factor)) + 1):
 		color = "#2d5475"
-		display.create_line(i * (scale_factor) + 200, 0, i * (scale_factor) + 200, 400, fill=color, width=2)
-		display.create_line(0, i * (scale_factor) + 200, 400, i * (scale_factor) + 200, fill=color, width=2)
-		display.create_line(-i * (scale_factor) + 200, 0, -i * (scale_factor) + 200, 400, fill=color, width=2)
-		display.create_line(0, -i * (scale_factor) + 200, 400, -i * (scale_factor) + 200, fill=color, width=2)
+		display.create_line(i * (scale_factor) + 200, 0, i * (scale_factor) + 200, 400, fill=color, width=2.5)
+		display.create_line(0, i * (scale_factor) + 200, 400, i * (scale_factor) + 200, fill=color, width=2.5)
+		display.create_line(-i * (scale_factor) + 200, 0, -i * (scale_factor) + 200, 400, fill=color, width=2.5)
+		display.create_line(0, -i * (scale_factor) + 200, 400, -i * (scale_factor) + 200, fill=color, width=2.5)
 	for i in range(0, math.floor(200/(scale_factor*4)) + 1):
 		color = "#203f57"
-		display.create_line(i * (scale_factor*4) + 200, 0, i * (scale_factor*4) + 200, 400, fill=color, width=2)
-		display.create_line(0, i * (scale_factor*4) + 200, 400, i * (scale_factor*4) + 200, fill=color, width=2)
-		display.create_line(-i * (scale_factor*4) + 200, 0, -i * (scale_factor*4) + 200, 400, fill=color, width=2)
-		display.create_line(0, -i * (scale_factor*4) + 200, 400, -i * (scale_factor*4) + 200, fill=color, width=2)
+		display.create_line(i * (scale_factor*4) + 200, 0, i * (scale_factor*4) + 200, 400, fill=color, width=2.5)
+		display.create_line(0, i * (scale_factor*4) + 200, 400, i * (scale_factor*4) + 200, fill=color, width=2.5)
+		display.create_line(-i * (scale_factor*4) + 200, 0, -i * (scale_factor*4) + 200, 400, fill=color, width=2.5)
+		display.create_line(0, -i * (scale_factor*4) + 200, 400, -i * (scale_factor*4) + 200, fill=color, width=2.5)
+
+	for i in points:
+		#print(i)
+		display_points.append([((i[0] + x_offset) * scale_factor) + 200, 200 - (i[1] * scale_factor)])
 	
 	linewidth = (7 if stylized_var.get() else 1)
 
