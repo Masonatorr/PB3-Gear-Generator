@@ -21,7 +21,7 @@ This is the type of gear that will be created. These are the six types currently
 ![Trapezoidal Tooth Rack Gear](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/62268870-cc55-433c-89e2-049ac8882e56 "Trapezoidal Tooth Rack Gear")  
 
 
-To select which gear you want to generate, type the gear's number into the input field.
+To pick which gear you want to generate, select one from the dropdown menu. Values will persist between different gear types.
 
 ## Number of Teeth:
 Self explanatory. Whatever number you enter is the number of teeth that the resulting gear will have. Increasing this number will make the teeth thinner unless you increase the gear radius.
@@ -38,7 +38,7 @@ See how the red circles are touching when the gears are meshing together? Having
 The tooth height controls the total height of the tooth from tip to base, as shown here:  
 ![Tooth height](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/77d97b42-797d-4a83-8131-f7185e7f692b "Tooth height")  
 As mentioned previously, the tip and base of each tooth are both an equal distance away from the gear's radius.  
-I would recommend a tooth height of around 0.5m, as higher values can make the teeth too long to properly mesh with each other.
+I would recommend a tooth height of around 0.5m, as higher values can make the teeth too long to properly mesh with each other. If you increase the tooth count more than you increase the gear radius, you'll want to shorten the teeth, and if you do the opposite, you'll want to lengthen the teeth.
 
 ## Outer Radius of Ring (Ring Gears):
 Ring gears have almost exactly the same shape as their respective spur gears, except they are inverted, with an empty space on the inside and an outside ring. The outer radius is measured as the distance from the center of the gear to any point on the outside ring, as shown here:  
@@ -50,10 +50,9 @@ Therefore, you have two options: a) keep the seam invisible but leave the gear u
 (Seam vs no seam)  
 ![Seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/ac73b086-c986-4ef1-9ab9-47fc78b94260 "Seam")
 ![No seam](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/eb2888db-5a7e-4bfe-9e20-34e96abfca78 "No seam")  
-To keep your seam invisible, type "N" into the input field. To widen the seam, type "Y".
 
 ## Rack Gears:
-Rack gears are unique in that they are not round like the rest. Instead, they are flattened into strips of teeth. Because of their unique shape, it is much harder to generate them in such a way that they mesh perfectly with other gears. Therefore, these gears are formed using a "reference gear", basically being the gear that this rack is designed to mesh with.  
+Rack gears are unique in that they are not round like the rest. Instead, they are flattened into strips of teeth. Because of their unique shape, it is much harder to generate them on their own in such a way that they mesh perfectly with other gears. Therefore, these gears are formed using a "reference gear", basically being the gear that this rack is designed to mesh with.  
 ![Reference gear and resulting rack](https://github.com/Masonatorr/PB3-Gear-Generator/assets/42453670/d4bc9180-6aa5-47ef-a3f8-79611a33d7e5 "Reference gear and resulting rack")  
 The first three properties (num teeth, gear radius, and tooth height) shape this "reference" gear, and the final two (num teeth and clearance) directly shape the resulting rack gear.
 
