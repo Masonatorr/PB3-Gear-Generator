@@ -12,8 +12,11 @@ from tkinter import font as tkFont
 from PIL import Image, ImageFont, ImageTk
 from PIL.ImageDraw import ImageDraw
 import Pmw
+import requests
+from packaging.version import Version
+import webbrowser
 
-textmode = False
+version = "v2.1.1"
 
 def get_config_dir():
 	if sys.platform == 'win32':
@@ -704,6 +707,16 @@ def positionWindowCenterOfRoot(new_window, root_window):
 	new_window.update()
 	new_window.geometry(f"+{math.floor(center_x - (new_window.winfo_width() / 2))}+{math.floor(center_y - (new_window.winfo_height() / 2))}")
 
+def checkVersion():
+	response = requests.get("https://api.github.com/repos/Masonatorr/PB3-Gear-Generator/releases/latest")
+	latest_version = response.json()["name"]
+	#print(latest_version)
+	#print(f"{latest_version} > {version}")
+	#print(Version(latest_version) > Version(version))
+	if Version(latest_version) > Version(version):
+		if messagebox.askyesno(message=F"A new version is available: {version} -> {latest_version}\nWould you like to download the latest version?"):
+			webbrowser.open("https://github.com/Masonatorr/PB3-Gear-Generator/releases/latest")
+
 if __name__ == '__main__':
 	min_teeth = IntVar(value=4)
 	teeth_text = StringVar(value="Number of Teeth (min 4)")
@@ -868,4 +881,5 @@ if __name__ == '__main__':
 	setValuesNormal()
 
 	root.focus_force()
+	root.after(100, checkVersion)
 	root.mainloop()
